@@ -1,0 +1,8 @@
+apiVersion: v2
+name: phoenix
+description: Next generation frontend for ownCloud
+type: application
+version: 0.1.0
+appVersion: 0.9.0
+home: https://phoenix.owncloud.com
+source: https://github.com/owncloud/phoenix
