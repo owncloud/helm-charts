@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "phoenix.fullname" . }}
+  labels:
+    {{- include "phoenix.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "phoenix.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "phoenix.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: config-gen
+          image: busybox
+          command: ['sh', '-c', 'cp /phoenix/config.json /etc/phoenix/']
+          volumeMounts:
+            - name: {{ include "phoenix.fullname" . }}-init-config
+              mountPath: /phoenix/config.json
+              subPath: config.json
+            - name: {{ include "phoenix.fullname" . }}-config
+              mountPath: /etc/phoenix
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: {{ include "phoenix.fullname" . }}-config
+              mountPath: /srv/www/config.json
+              subPath: config.json
+      volumes:
+        - name: {{ include "phoenix.fullname" . }}-config
+          emptyDir: {}
+        - name: {{ include "phoenix.fullname" . }}-init-config
+          configMap:
+            name: phoenix-init-config

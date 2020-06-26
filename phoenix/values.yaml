@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: owncloud/phoenix
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8300
+
+ocis:
+  server: http://localhost:20080
+
+oidc:
+  authority: http://localhost:20080
+
+apps:
+  - files
+  - markdown-editor
+  - pdf-viewer
+  - media-viewer
